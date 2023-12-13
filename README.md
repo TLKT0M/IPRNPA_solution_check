@@ -8,7 +8,7 @@ The `SolutionChecker` reads two JSON files: an instance file (`instance_file.jso
 
 
 ## Inputs
-1. instance_file: Instance file (`instance_file.json`) from the  [Github Project](https://github.com/TabeaBrandt/instance_generation_integrated_beds_and_staff_planning)
+1. instance_file: Instance file (`instance_file.json`) from the  [Github Project](https://github.com/TLKT0M/PRA_instance_generator)
 2. sol_file: Solutionfile (`sol_file.json`) \
     if math_mode = True: look at  [sol_file.json (math_mode = True)](#math_mode_true) \
     if math_mode = False: look at  [sol_file.json (math_mode = False)](#math_mode_false)
