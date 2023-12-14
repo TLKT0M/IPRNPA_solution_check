@@ -1,4 +1,4 @@
-# Patient-to-Bed and Nurse Assignment Solution Checker
+# IPRNPA Solution Checker
 
 ## Overview
 This project includes a program called `SolutionChecker` that was developed to check solutions of patient-to-room and nurse-to-patient assignment described in our [preprint](https://arxiv.org/abs/2309.10739)
