@@ -5,7 +5,16 @@ github: https://github.com/TLKT0M/PRA_solution_check
 """
 
 class SolutionChecker:
-    def __init__(self, instance_file, sol_file, math_mode = True,three_shift=False):
+    def __init__(self, instance_file, sol_file,weighted_obj_weights={              
+                        "transfers":11,
+                        "inconvenience":5,
+                        "gender_mix":5,
+                        "equipment_vio":1,
+                        "continuity_care":1,
+                        "collected_nurse_vios": 5,
+                        "min_nurse_num":2,
+                        "walking_dist":0.05},
+                        math_mode = True,three_shift=False):
         with open(instance_file, "r") as file:
             self.ins = json.load(file)
         with open(sol_file, "r") as file:
@@ -18,6 +27,7 @@ class SolutionChecker:
         ) * 3
         if math_mode:
             self.convert_to_readable()
+
         self.errors, self.violations, self.transfers= [],[],[]
         self.obj1= self.obj2= self.obj3= self.obj4= self.obj5= self.obj6 = 0
         self.obj7 =self.obj11 =self.vio_skill =self.vio_load =self.vio_fair = 0
@@ -31,6 +41,7 @@ class SolutionChecker:
         self.check_skills_observed()
         self.calc_transfer_penalties()
         self.check_equipment_violations()
+        
         self.check_age_violations()
         self.check_different_nurse_count()
         self.check_nurse_room_violations()
@@ -45,53 +56,43 @@ class SolutionChecker:
         self.obj11 = self.walkdistance
 
         self.total = (
-            11 * self.obj1
-            + 5 * self.obj3
-            + 5 * self.obj4
-            + 1 * self.obj5
-            + 1 * self.obj2
-            + 5 * self.vio_skill
-            + 5 * self.obj7
-            + 2 * self.obj6
-            + 0.05 * self.obj11
+            weighted_obj_weights["transfers"] * self.obj1
+            + weighted_obj_weights["inconvenience"] * self.obj3
+            + weighted_obj_weights["gender_mix"] * self.obj4
+            + weighted_obj_weights["equipment_vio"] * self.obj5
+            + weighted_obj_weights["continuity_care"] * self.obj2
+            + weighted_obj_weights["collected_nurse_vios"] * self.obj7
+            + weighted_obj_weights["min_nurse_num"] * self.obj6
+            + weighted_obj_weights["walking_dist"] * self.obj11
         )
-        
-        print("Objective Total: ", self.total)
-        print("Objective 1:", self.obj1)
-        print("Objective 2:", self.obj3)
-        print("Objective 3:", self.obj4)
-        print("Objective 4:", self.obj5)
-        print("Objective 5:", self.obj7)
-        print("Objective 6:", self.obj6)
-        print("Objective 7:", self.obj11)
-        print("Objective 11:", self.obj2)
-        print("Objective VioSkill: 0 //", self.vio_skill, "Fails")  # FAILED
-        print("Objective VioLoad:", self.vio_load)
-        print("Objective VioFair:", self.vio_fair)
-        print("Objective VioFairShift:", self.vio_fair_shift)
-    
-        filename = os.path.join(instance_file.split(".")[0]+"_checked.json")
+        objective_dict = {"weighted_total_obj":self.total,
+                        "unweighted_transfers_obj":self.obj1,
+                        "unweighted_inconvenience_obj":self.obj2,
+                        "unweighted_gender_mix_obj":self.obj3,
+                        "unweighted_equipment_vio_obj":self.obj4,
+                        "unweighted_continuity_care_obj":self.obj5,
+                        "unweighted_collected_nurse_vios": self.obj7,
+                        "unweighted_min_nurse_num_obj":self.obj6,
+                        "unweighted_walking_dist_obj":self.obj11,
+                        "unweighted_nurse_vio_skill_obj":self.vio_skill,
+                        "unweighted_nurse_vio_load_obj":self.vio_load,
+                        "unweighted_nurse_vio_fair_obj":self.vio_fair,
+                        "unweighted_nurse_vio_fair_shift_obj":self.vio_fair_shift}
+        print(json.dumps(objective_dict,
+              indent=4))
+        os.makedirs(
+            "checked",
+            exist_ok=True,
+        )
+        filename = os.path.join("checked",instance_file.split(".")[0].split("/")[-1]+"_checked.json")
         with open(filename, "w") as f:
             json.dump(
                 {
+                    "objectives": objective_dict,
                     "errors": self.errors,
                     "violations": self.violations,
                     "transfers": self.transfers,
-                    "objectives": {
-                        "objective_total":self.total,
-                        "objective_1":self.obj1,
-                        "objective_2":self.obj3,
-                        "objective_3":self.obj4,
-                        "objective_4":self.obj5,
-                        "objective_5":self.obj7,
-                        "objective_6":self.obj6,
-                        "objective_7":self.obj11,
-                        "objective_11":self.obj2,
-                        "objective_vio_skill":self.vio_skill,
-                        "objective_vio_load":self.vio_load,
-                        "objective_vio_fair":self.vio_fair,
-                        "objective_vio_fair_shift":self.vio_fair_shift,
-                    }
+                    
                 },
                 f,
                 indent=4,
@@ -196,7 +197,7 @@ class SolutionChecker:
                 self.walkdistance += self.dist_shift[s][n]
 
     def check_all_violations(self):
-        self.obj7 = self.vio_fair + self.vio_fair_shift + self.vio_load
+        self.obj7 = self.vio_fair + self.vio_fair_shift + self.vio_load +self.vio_skill
 
     def check_fairness_factor(self):
         for shift in self.sol:
@@ -239,20 +240,18 @@ class SolutionChecker:
                 age_min = None
                 age_max = None
                 for patient in self.sol[shift][room]:
-                    if age_min is None:
+                    if age_min is None:                    
                         age_min = self.patients[patient]["ageGroup"]
                     else:
                         if age_min >= self.patients[patient]["ageGroup"]:
                             age_min = self.patients[patient]["ageGroup"]
-     
-
                     if age_max is None:
                         age_max = self.patients[patient]["ageGroup"]
                     else:
                         if age_max <= self.patients[patient]["ageGroup"]:
                             age_max = self.patients[patient]["ageGroup"]
-                  
-                self.obj2 += age_max - age_min
+                if age_min !=None and age_max != None:
+                    self.obj2 += age_max - age_min
 
 
 
@@ -318,7 +317,7 @@ class SolutionChecker:
                     ]["skillReq"]
                     if nurse_skill < patient_skill_req:
                         if not self.three_shift:
-                            if (int(shift) + 2) % 3 == 0:
+                            if (int(shift) + 2) % 3 <=1:
                                 violation_msg = f"NurseSkillLevelRequirementViolation: shift: {shift} nurse: {self.sol[shift][room][patient]} with skill level {nurse_skill} does not fulfill skill level {patient_skill_req} of patient {patient} in shift {shift}"
                                 self.violations.append(violation_msg)
                                 self.vio_skill += 1
@@ -371,6 +370,7 @@ class SolutionChecker:
         for shift in self.sol:
             for room in self.sol[shift]:
                 gender = None
+                gender_mixing = False
                 patient_genders = []
                 for patient in self.sol[shift][room]:
                     if gender is None:
@@ -382,21 +382,25 @@ class SolutionChecker:
                             }
                         )
                     else:
-                        if gender != self.patients[patient]["gender"]:
-                            if not self.three_shift:
-                                if (int(shift) + 2) % 3 == 0:
+                        if gender_mixing == False:
+                            if gender != self.patients[patient]["gender"]:
+                                gender_mixing = True
+                            
+                                if not self.three_shift:
+                                    if (int(shift) + 2) % 3 == 0:
+                                        violation_msg = f"RoomGenderMixingViolation: shift: {shift} room: {room} has mixed genders. Current room gender: {gender} mixed with {self.patients[patient]['gender']} from patient: {patient}"
+                                        self.violations.append(violation_msg)
+                                else:
                                     violation_msg = f"RoomGenderMixingViolation: shift: {shift} room: {room} has mixed genders. Current room gender: {gender} mixed with {self.patients[patient]['gender']} from patient: {patient}"
                                     self.violations.append(violation_msg)
-                            else:
-                                violation_msg = f"RoomGenderMixingViolation: shift: {shift} room: {room} has mixed genders. Current room gender: {gender} mixed with {self.patients[patient]['gender']} from patient: {patient}"
-                                self.violations.append(violation_msg)
-                            self.obj3 += 1
-                            patient_genders.append(
-                                {
-                                    "Patient "
-                                    + str(patient): self.patients[patient]["gender"]
-                                }
-                            )
+                                
+                                self.obj3 += 1
+                                patient_genders.append(
+                                    {
+                                        "Patient "
+                                        + str(patient): self.patients[patient]["gender"]
+                                    }
+                                )
 
     def check_room_capacity(self):
         for shift in self.sol:
@@ -489,6 +493,7 @@ class SolutionChecker:
                             p, str(int(s) + 2)
                         )
         self.sol = invert
+        
 
     def get_nurse(self, p, s):
         for n in self.data["x"][p]:
@@ -496,5 +501,6 @@ class SolutionChecker:
                 if self.data["x"][p][n][s] == 1:
                     return n
 
+# For Development example
 
-#solutionchecker = SolutionChecker("instance.json", "solution_math_mode_true.json")
+solutionchecker = SolutionChecker("instance/instance.json", "solutions/solution_math_mode_true.json")
