@@ -12,8 +12,9 @@ The `SolutionChecker` reads two JSON files: an instance file (`instance_file.jso
 2. sol_file: Solutionfile (`sol_file.json`) \
     if math_mode = True: look at  [sol_file.json (math_mode = True)](#math_mode_true) \
     if math_mode = False: look at  [sol_file.json (math_mode = False)](#math_mode_false)
-3. math_mode = True/False
-4. three_shift = True/False \
+3. weighted_obj_weights = view our [preprint](https://arxiv.org/abs/2309.10739)
+4. math_mode = True/False
+5. three_shift = True/False \
     False: transfers and violations only in early shift \
     True: violations calculated in every shift
 
