@@ -5,11 +5,11 @@ github: https://github.com/TLKT0M/PRA_solution_check
 """
 
 class SolutionChecker:
-    def __init__(self, instance_file, sol_file,weighted_obj_weights={              
+    def __init__(self, instance_file, sol_file,weighted_obj_weights={
                         "transfers":11,
-                        "inconvenience":5,
+                        "inconvenience":1,
                         "gender_mix":5,
-                        "equipment_vio":1,
+                        "equipment_vio":5,
                         "continuity_care":1,
                         "collected_nurse_vios": 5,
                         "min_nurse_num":2,
