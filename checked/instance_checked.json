@@ -1,12 +1,12 @@
 {
     "objectives": {
-        "weighted_total_obj": 7047.019533333334,
+        "weighted_total_obj": 9611.019533333334,
         "unweighted_transfers_obj": 4,
         "unweighted_inconvenience_obj": 304,
         "unweighted_gender_mix_obj": 68,
         "unweighted_equipment_vio_obj": 26,
         "unweighted_continuity_care_obj": 709,
-        "unweighted_collected_nurse_vios": 751.0266666666666,
+        "unweighted_collected_nurse_workload_vios": 668.0266666666666,
         "unweighted_min_nurse_num_obj": 506,
         "unweighted_walking_dist_obj": 15057.724000000006,
         "unweighted_nurse_vio_skill_obj": 83,
