@@ -11,7 +11,8 @@ class SolutionChecker:
                         "gender_mix":5,
                         "equipment_vio":5,
                         "continuity_care":1,
-                        "collected_nurse_vios": 5,
+                        "collected_nurse_workload_vios": 5, #renamed collected_nurse_vios to collected_nurse_workload_vios
+                        "nurse_skill_vio": 5, # added nurse_skill_vio
                         "min_nurse_num":2,
                         "walking_dist":0.05},
                         math_mode = True,three_shift=False):
@@ -54,14 +55,15 @@ class SolutionChecker:
             self.obj3 = int(self.obj3 / 3)
             self.obj2 = int(self.obj2 / 3)
         self.obj11 = self.walkdistance
-
+        
         self.total = (
             weighted_obj_weights["transfers"] * self.obj1
             + weighted_obj_weights["inconvenience"] * self.obj3
             + weighted_obj_weights["gender_mix"] * self.obj4
             + weighted_obj_weights["equipment_vio"] * self.obj5
             + weighted_obj_weights["continuity_care"] * self.obj2
-            + weighted_obj_weights["collected_nurse_vios"] * self.obj7
+            + weighted_obj_weights["collected_nurse_workload_vios"] * self.obj7 #renamed collected_nurse_vios to collected_nurse_workload_vios
+            #+ weighted_obj_weights["nurse_skill_vio"] * self.vio_skill # added nurse_skill_vio
             + weighted_obj_weights["min_nurse_num"] * self.obj6
             + weighted_obj_weights["walking_dist"] * self.obj11
         )
@@ -71,7 +73,7 @@ class SolutionChecker:
                         "unweighted_gender_mix_obj":self.obj3,
                         "unweighted_equipment_vio_obj":self.obj4,
                         "unweighted_continuity_care_obj":self.obj5,
-                        "unweighted_collected_nurse_vios": self.obj7,
+                        "unweighted_collected_nurse_workload_vios": self.obj7, #renamed unweighted_collected_nurse_vios to unweighted_collected_nurse_workload_vios
                         "unweighted_min_nurse_num_obj":self.obj6,
                         "unweighted_walking_dist_obj":self.obj11,
                         "unweighted_nurse_vio_skill_obj":self.vio_skill,
@@ -197,7 +199,8 @@ class SolutionChecker:
                 self.walkdistance += self.dist_shift[s][n]
 
     def check_all_violations(self):
-        self.obj7 = self.vio_fair + self.vio_fair_shift + self.vio_load +self.vio_skill
+        self.obj7 = self.vio_fair + self.vio_fair_shift + self.vio_load #removed self.vio_skill
+        
 
     def check_fairness_factor(self):
         for shift in self.sol:
