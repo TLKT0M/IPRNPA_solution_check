@@ -63,7 +63,7 @@ class SolutionChecker:
             + weighted_obj_weights["equipment_vio"] * self.obj5
             + weighted_obj_weights["continuity_care"] * self.obj2
             + weighted_obj_weights["collected_nurse_workload_vios"] * self.obj7 #renamed collected_nurse_vios to collected_nurse_workload_vios
-            #+ weighted_obj_weights["nurse_skill_vio"] * self.vio_skill # added nurse_skill_vio
+            + weighted_obj_weights["nurse_skill_vio"] * self.vio_skill # added nurse_skill_vio
             + weighted_obj_weights["min_nurse_num"] * self.obj6
             + weighted_obj_weights["walking_dist"] * self.obj11
         )
